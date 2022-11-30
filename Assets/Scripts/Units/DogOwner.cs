@@ -24,8 +24,8 @@ public class DogOwner : UnitController
 
         foreach (var pos in GridController.GetAdjacentTiles(position))
         {
-            if (GameController.Grid.IsTileOccupied(pos) &&
-                GameController.Grid.GetUnitOnSpace(pos).unitName == "Player")
+            if (GridController.IsTileOccupied(pos) &&
+                GridController.GetUnitOnSpace(pos).unitName == "Player")
             {
                 Attack(pos, 3);
                 break;
@@ -35,7 +35,7 @@ public class DogOwner : UnitController
 
     public override void React()
     {
-        if (!isFriendly && Reactions.WasUnitWithNameKilled("Dog"))
+        if (!isFriendly && Reactions.CurrentReactions.WasUnitWithNameKilled("Dog"))
         {
             _isAngry = true;
         }
@@ -52,7 +52,7 @@ public class DogOwner : UnitController
         {
             isFriendly = true;
 
-            var unitList = TurnController.Units.ToList().OfType<Dog>();
+            var unitList = GameController.CurrentGameController.units.ToList().OfType<Dog>();
             foreach (var dog in unitList)
             {
                 dog.isPassive = true;

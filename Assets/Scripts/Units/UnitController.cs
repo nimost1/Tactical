@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -33,21 +34,14 @@ public class UnitController : MonoBehaviour
     private void Awake()
     {
         Initialize();
-    }
-
-    private void Start()
-    {
+        GameController.CurrentGameController.units.Add(this);
+        
         hitPoints = maxHitPoints;
         _healthText = GetComponentInChildren<TMP_Text>();
         _healthText.text = hitPoints.ToString();
         
         position = GridController.WorldCoordinatesToGridCoordinates(transform.position);
         transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
-
-        if (canOccupyTile)
-        {
-            GameController.Grid.AddOccupation(position);
-        }
     }
 
     public void TakeTurn()
@@ -61,14 +55,20 @@ public class UnitController : MonoBehaviour
         else
         {
             TakeAITurn();
-            FinishTurn();
+            StartCoroutine(FinishTurn());
         }
     }
 
-    protected void FinishTurn()
+    protected IEnumerator FinishTurn()
     {
-        //Returns control to TurnController.
-        StartCoroutine(GameController.TurnController.ProceedToNextTurn());
+        //Lets all other units react
+        GameController.CurrentGameController.React();
+        
+        //Animate any changes
+        yield return AnimationController.AnimateState();
+
+        //Gives control to the next unit in the turn order
+        TurnController.ProceedToNextTurn(this);
     }
 
     protected virtual IEnumerator TakePlayerTurn()
@@ -77,7 +77,7 @@ public class UnitController : MonoBehaviour
         
         yield return null;
         
-        FinishTurn();
+        StartCoroutine(FinishTurn());
     }
 
     protected virtual void TakeAITurn()
@@ -99,35 +99,25 @@ public class UnitController : MonoBehaviour
 
     public void TakeDamageHit(int damage)
     {
-        Reactions.TargetedUnits.Add(this);
+        Reactions.CurrentReactions.targetedUnits.Add(this);
         
         hitPoints -= damage;
         _healthText.text = hitPoints.ToString();
         
         if (damage > 0)
         {
-            Reactions.DamagedUnits.Add(this);
+            Reactions.CurrentReactions.damagedUnits.Add(this);
         }
         if (hitPoints <= 0)
         {
-            Reactions.KilledUnits.Add(this);
-            
-            if (canOccupyTile)
-            {
-                GameController.Grid.RemoveOccupation(position);
-            }
+            Reactions.CurrentReactions.killedUnits.Add(this);
 
-            GameController.TurnController.RemoveUnit(this);
+            TurnController.RemoveUnitFromUnitList(this);
         }
     }
 
     public void MoveTo(Vector2Int pos)
     {
-        if (canOccupyTile)
-        {
-            GameController.Grid.RemoveOccupation(position);
-            GameController.Grid.AddOccupation(pos);
-        }
         position = pos;
         transform.position = GridController.GridCoordinatesToWorldCoordinates(pos);
     }
@@ -140,9 +130,9 @@ public class UnitController : MonoBehaviour
 
     protected void Attack(Vector2Int pos, int damage)
     {
-        if (GameController.Grid.IsTileOccupied(pos))
+        if (GridController.IsTileOccupied(pos))
         {
-            Attack(GameController.Grid.GetUnitOnSpace(pos), damage);
+            Attack(GridController.GetUnitOnSpace(pos), damage);
         }
         else
         {

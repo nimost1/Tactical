@@ -1,26 +1,42 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Reactions
+public class Reactions : MonoBehaviour
 {
-    public static List<UnitController> TargetedUnits = new List<UnitController>();
-    public static List<UnitController> DamagedUnits = new List<UnitController>();
-    public static List<UnitController> KilledUnits = new List<UnitController>();
+    public static Reactions CurrentReactions = null;
     
-    public static List<Vector2Int> SpacesMovedOver = new List<Vector2Int>();
+    public List<UnitController> targetedUnits = new List<UnitController>();
+    public List<UnitController> damagedUnits = new List<UnitController>();
+    public List<UnitController> killedUnits = new List<UnitController>();
+    
+    public List<Vector2Int> spacesMovedOver = new List<Vector2Int>();
 
-    public static void ClearData()
+    private void Awake()
     {
-        TargetedUnits.Clear();
-        DamagedUnits.Clear();
-        KilledUnits.Clear();
-        SpacesMovedOver.Clear();
+        if (CurrentReactions == null)
+        {
+            CurrentReactions = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
 
-    public static bool IsUnitInMovementRange(UnitController caller, UnitController other)
+
+    public void ClearData()
     {
-        List<Vector2Int> rangeList = GameController.Grid.GetReachableFromTile(caller.position, caller.movementRange);
+        targetedUnits.Clear();
+        damagedUnits.Clear();
+        killedUnits.Clear();
+        spacesMovedOver.Clear();
+    }
+
+    public bool IsUnitInMovementRange(UnitController caller, UnitController other)
+    {
+        List<Vector2Int> rangeList = GridController.GetReachableFromTile(caller.position, caller.movementRange);
 
         foreach (var pos in rangeList)
         {
@@ -33,11 +49,11 @@ public class Reactions
         return false;
     }
 
-    public static bool WasUnitWithNameKilled(string name)
+    public bool WasUnitWithNameKilled(string unitName)
     {
-        foreach (var unit in KilledUnits)
+        foreach (var unit in killedUnits)
         {
-            if (unit.unitName == name)
+            if (unit.unitName == unitName)
             {
                 return true;
             }

@@ -1,35 +1,59 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[RequireComponent(typeof(GridController), typeof(TurnController),
-    typeof(PlayerInteractionController))]
-[RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(PointerController), typeof(PlayerInput), typeof(Reactions))]
 public class GameController : MonoBehaviour
 {
-    public static GridController Grid;
-    public static TurnController TurnController;
-    public static PlayerInteractionController PlayerInteraction;
+    public static GameController CurrentGameController;
+    
+    public List<UnitController> units;
+    
     public static PlayerInput Input;
+    public static PointerController Pointer;
 
     //The height and width of the tilemap, i.e., index [EasternBorder, UpperBorder] does not exist.
-    public static int UpperBorder = 10;
-    public static int EasternBorder = 10;
+    public int upperBorder = 10;
+    public int easternBorder = 10;
 
     public static bool IsHugEnabled;
     public TMP_Text huggingText;
+
+    public Tilemap ground;
     
     private void Awake()
     {
-        Grid = GetComponent<GridController>();
-        TurnController = GetComponent<TurnController>();
-        PlayerInteraction = GetComponent<PlayerInteractionController>();
+        if (CurrentGameController == null)
+        {
+            CurrentGameController = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
         Input = GetComponent<PlayerInput>();
 
+        //Find the ground tilemap
+        ground = GameObject.Find("Ground").GetComponent<Tilemap>();
+        
         huggingText.enabled = false;
+    }
+
+    private void Start()
+    {
+        Pointer = GetComponent<PointerController>();
+        
+        units.Sort((a, b) => { if (a == b) return 0;
+            return a.turnOrder > b.turnOrder ? 1 : -1; });
+
+        AnimationController.InitializeState();
+        
+        units[0].TakeTurn();
     }
 
     private void Update()
@@ -46,5 +70,18 @@ public class GameController : MonoBehaviour
                 huggingText.enabled = false;
             }
         }
+    }
+
+    public void React()
+    {
+        foreach (var unit in units)
+        {
+            unit.React();
+        }
+    }
+
+    public Coroutine StartAnimateState()
+    {
+        return StartCoroutine(AnimationController.AnimateState());
     }
 }

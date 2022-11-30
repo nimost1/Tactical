@@ -17,32 +17,34 @@ public class PlayerCharacter : UnitController
     protected override IEnumerator TakePlayerTurn()
     {
         Vector2Int target;
-        GameController.PlayerInteraction.pointerPosition = position;
+        GameController.Pointer.SetPointerPosition(position);
 
         do
         {
             //Movement
-            yield return GameController.PlayerInteraction.SelectPositionWithPointer(position);
+            yield return GameController.Pointer.SelectPositionWithPointer();
 
-            GameController.PlayerInteraction.isFinished = false;
-            target = GameController.PlayerInteraction.pointerPosition;
+            target = GameController.Pointer.GetPointerPosition();
         } while (target == position
-                 || (!GameController.Grid.IsTileOccupied(target)
-                     && !GameController.Grid.CanMoveTo(position, target, movementRange))
-                 || (GameController.Grid.IsTileOccupied(target)
-                     && !GameController.Grid.CanAttackMelee(position, target, movementRange)));
+                 || (!GridController.IsTileOccupied(target)
+                     && !GridController.CanMoveTo(position, target, movementRange))
+                 || (GridController.IsTileOccupied(target)
+                     && !GridController.CanAttackMelee(position, target, movementRange)));
         
-        //If there is a unit on the target space, move to it and attack, else move to the target.
-        if (GameController.Grid.IsTileOccupied(target))
+        GameController.Pointer.HidePointer();
+        
+        //If there is a unit on the target space, move to it and attack. If not, move to the target.
+        if (GridController.IsTileOccupied(target))
         {
-            MoveTo(UnitAIUtils.FindMovementTargetTowardsUnit(this, GameController.Grid.GetUnitOnSpace(target)));
+            MoveTo(UnitAIUtils.FindMovementTargetTowardsUnit(this,
+                GridController.GetUnitOnSpace(target)));
             if (GameController.IsHugEnabled)
             {
-                Hug(this, GameController.Grid.GetUnitOnSpace(target));
+                Hug(this, GridController.GetUnitOnSpace(target));
             }
             else
             {
-                Attack(GameController.Grid.GetUnitOnSpace(target), 1);
+                Attack(GridController.GetUnitOnSpace(target), 1);
             }
         }
         else
@@ -50,7 +52,7 @@ public class PlayerCharacter : UnitController
             MoveTo(target);
         }
 
-        FinishTurn();
+        StartCoroutine(FinishTurn());
     }
 
     public override void React()

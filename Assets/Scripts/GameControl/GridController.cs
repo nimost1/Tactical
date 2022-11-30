@@ -10,40 +10,37 @@ public class GridController : MonoBehaviour
 {
     //The grid controller is supposed to contain methods that let units make decisions on how to act, based on the grid state.
     
-    
-    private Tilemap _ground;
-    private static bool[,] _isOccupied = new bool[10,10];
-    
     public TerrainObject DefaultTerrainObject;
     public TerrainObject GrassTerrainObject;
 
     private void Awake()
     {
-        //Find the ground tilemap
-        _ground = GameObject.Find("Ground").GetComponent<Tilemap>();
-
         DefaultTerrainObject = new TerrainObject(true);
         GrassTerrainObject = new TerrainObject(true);
     }
     
-    public void AddOccupation(Vector2Int pos)
+    public static bool IsTileOccupied(Vector2Int pos)
     {
-        _isOccupied[pos.x, pos.y] = true;
-    }
-    
-    public void RemoveOccupation(Vector2Int pos)
-    {
-        _isOccupied[pos.x, pos.y] = false;
+        foreach (var unit in GameController.CurrentGameController.units)
+        {
+            if (unit.canOccupyTile && unit.position == pos) return true;
+        }
+
+        return false;
     }
 
-    public bool IsTileOccupied(Vector2Int pos)
+    /*public static TerrainObject GetTerrainType(Vector2Int pos, Tilemap ground)
     {
-        return _isOccupied[pos.x, pos.y];
-    }
+        //En løsning er å droppe dette og heller sette opp et ScriptableObject e.l. for hver tile og linke hver tile i
+        //tile paletten til det. Da kan man sikkert sjekke scriptet for data.
+        
+        //En annen løsning kan være å lage funksjoner som sjekker terrengegenskaper basert på posisjon.
+        //Kan lage en funksjon som genererer arrays med data på compile og lagrer det i et Scriptable Object.
+        
+        //Jeg fant en løsning på internett. Se videoen i lenken jeg la til som bokmerke
 
-    public TerrainObject GetTerrainType(Vector2Int pos)
-    {
-        Sprite sprite = _ground.GetSprite(new Vector3Int(pos.x, pos.y, 0));
+        Sprite sprite = ground.GetSprite(new Vector3Int(pos.x, pos.y, 0));
+        print(sprite.name);
 
         //TODO: Dette funker ikke, fordi det ser ut som "name" vil gi navnet på tilemappet.
 
@@ -58,22 +55,22 @@ public class GridController : MonoBehaviour
                 print("Default");
                 return DefaultTerrainObject;
         }
-    }
+    }*/
     
-    public UnitController GetUnitOnSpace(Vector2Int pos)
+    public static UnitController GetUnitOnSpace(Vector2Int pos)
     {
-        foreach (var unit in TurnController.Units)
+        foreach (var unit in GameController.CurrentGameController.units)
         {
             if (unit.position == pos)
             {
                 return unit;
             }
         }
-
+        
         return null;
     }
 
-    public List<Vector2Int> GetReachableFromTile(Vector2Int startPos, int range)
+    public static List<Vector2Int> GetReachableFromTile(Vector2Int startPos, int range)
     {
         List<Vector2Int> reachable = new List<Vector2Int>();
         List<Vector2Int> active = new List<Vector2Int>();
@@ -103,7 +100,7 @@ public class GridController : MonoBehaviour
         return Mathf.Abs(startPos.x - endPos.x) + Mathf.Abs(startPos.y - endPos.y);
     }
 
-    public List<Vector2Int> ShortestMovablePathBetweenTiles(Vector2Int startPos, Vector2Int endPos)
+    public static List<Vector2Int> ShortestMovablePathBetweenTiles(Vector2Int startPos, Vector2Int endPos)
     {
         //Using A*-search
         var open = new List<Vector2Int>();
@@ -169,12 +166,12 @@ public class GridController : MonoBehaviour
         return new List<Vector2Int>();
     }
 
-    public int ShortestMovableLengthBetweenTile(Vector2Int startPos, Vector2Int endPos)
+    public static int ShortestMovableLengthBetweenTile(Vector2Int startPos, Vector2Int endPos)
     {
         return ShortestMovablePathBetweenTiles(startPos, endPos).Count;
     }
 
-    public bool CanMoveTo(Vector2Int startPos, Vector2Int endPos, int range)
+    public static bool CanMoveTo(Vector2Int startPos, Vector2Int endPos, int range)
     {
         //Checks if a unit on startPos are able to reach endPos within range spaces, while using available spaces.
         if (startPos == endPos)
@@ -182,11 +179,11 @@ public class GridController : MonoBehaviour
             return true;
         }
         
-        var length = GameController.Grid.ShortestMovableLengthBetweenTile(startPos, endPos);
-        return length != 0 && length <= range && !IsTileOccupied(endPos) && GetTerrainType(endPos).IsMovable;
+        var length = ShortestMovableLengthBetweenTile(startPos, endPos);
+        return length != 0 && length <= range && !IsTileOccupied(endPos) /*&& GetTerrainType(endPos).IsMovable*/;
     }
 
-    public bool CanAttackMelee(Vector2Int startPos, Vector2Int endPos, int range)
+    public static bool CanAttackMelee(Vector2Int startPos, Vector2Int endPos, int range)
     {
         //Returns true if a one-range attack can hit the given tile
         foreach (var tile in GetAdjacentMovableTiles(endPos))
@@ -224,16 +221,80 @@ public class GridController : MonoBehaviour
     {
         var list = new List<Vector2Int>();
         if (pos.x != 0) list.Add(pos + Vector2Int.left);
-        if (pos.x != GameController.EasternBorder - 1) list.Add(pos + Vector2Int.right);
+        if (pos.x != GameController.CurrentGameController.easternBorder - 1) list.Add(pos + Vector2Int.right);
         if (pos.y != 0) list.Add(pos + Vector2Int.down);
-        if (pos.y != GameController.UpperBorder - 1) list.Add(pos + Vector2Int.up);
+        if (pos.y != GameController.CurrentGameController.upperBorder - 1) list.Add(pos + Vector2Int.up);
         return list;
     }
 
-    public List<Vector2Int> GetAdjacentMovableTiles(Vector2Int pos)
+    public static List<Vector2Int> GetAdjacentMovableTiles(Vector2Int pos)
     {
         var list = GetAdjacentTiles(pos).ToList();
-        list.RemoveAll(p => !GetTerrainType(p).IsMovable || _isOccupied[p.x, p.y]);
+        list.RemoveAll(p => /*!GetTerrainType(p).IsMovable ||*/ IsTileOccupied(p));
         return list;
     }
+    
+    public static List<Vector2Int> GetTilesInRange(Vector2Int pos, int range)
+    {
+        var open = GetAdjacentTiles(pos);
+        var closed = new List<Vector2Int>();
+        for (int i = 0; i < range; i++)
+        {
+            foreach (var position in open)
+            {
+                if (!closed.Contains(position))
+                {
+                    closed.Add(position);
+                }
+
+                if (i == range - 1)
+                {
+                    break;
+                }
+
+                foreach (var adjacent in GetAdjacentTiles(position))
+                {
+                    if (!open.Contains(adjacent) && !closed.Contains(adjacent))
+                    {
+                        open.Add(adjacent);
+                    }
+                }
+            }
+        }
+
+        return closed;
+    }
+
+    public static List<Vector2Int> GetTilesInMovableRange(Vector2Int pos, int range)
+    {
+        var open = GetAdjacentMovableTiles(pos);
+        var closed = new List<Vector2Int>();
+        for (int i = 0; i < range; i++)
+        {
+            foreach (var position in open)
+            {
+                if (!closed.Contains(position))
+                {
+                    closed.Add(position);
+                }
+
+                if (i == range - 1)
+                {
+                    break;
+                }
+
+                foreach (var adjacent in GetAdjacentMovableTiles(position))
+                {
+                    if (!open.Contains(adjacent) && !closed.Contains(adjacent))
+                    {
+                        open.Add(adjacent);
+                    }
+                }
+            }
+        }
+
+        return closed;
+    }
+
+    
 }

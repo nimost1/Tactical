@@ -21,7 +21,7 @@ public class Dog : UnitController
         if (isPassive) return;
         
         //Find units in range and sort out the dogs and the dogowner.
-        List<UnitController> unitList = TurnController.Units.ToList();
+        List<UnitController> unitList = GameController.CurrentGameController.units.ToList();
         unitList.RemoveAll(unit => unit.unitName is "Dog" or "DogOwner");
         
         //Do nothing if no targets are found.
@@ -43,7 +43,7 @@ public class Dog : UnitController
 
     public override void React()
     {
-        if (Reactions.KilledUnits.Exists(unit => unit.unitName is "DogOwner" or "Dog"))
+        if (Reactions.CurrentReactions.killedUnits.Exists(unit => unit.unitName is "DogOwner" or "Dog"))
         {
             isPassive = false;
         }

@@ -7,75 +7,29 @@ using UnityEngine.UI;
 
 public class TurnController : MonoBehaviour
 {
-    public static List<UnitController> Units;
-
-    private UnitController _nextUnit;
-
-    private bool _proceedToNextTurn;
-
-    private void Awake()
+    public static UnitController NextUnit(List<UnitController> units, UnitController currentUnit)
     {
-        Units = new List<UnitController>(FindObjectsOfType<UnitController>());
-    }
-
-    private void Start()
-    {
-        Units.Sort((a, b) => { if (a == b) return 0;
-            return a.turnOrder > b.turnOrder ? 1 : -1; });
-        
-        _nextUnit = Units[0];
-        
-        _proceedToNextTurn = true;
-    }
-
-    private void Update()
-    {
-        if (_proceedToNextTurn)
-        {
-            _proceedToNextTurn = false;
-            _nextUnit.TakeTurn();
-            SetNextUnit();
-        }
-    }
-
-    
-    /*
-     * Class GameController
-     * TurnController GetComponent
-     * Update (turnController.SetNextUnits(FeedNewList)
-     */
-    
-    public void SetNextUnit()
-    {
-        int index = Units.IndexOf(_nextUnit) + 1;
-        if (index >= Units.Count)
+        int index = units.IndexOf(currentUnit) + 1;
+        if (index >= units.Count)
         {
             index = 0;
         }
-        _nextUnit = Units[index];
+        return units[index];
     }
 
-    //TODO: Ta en second pass på denne funksjonaliteten.
-    public IEnumerator ProceedToNextTurn()
+    public static void ProceedToNextTurn(UnitController currentUnit)
     {
-        yield return new WaitForSeconds(0.3f);
-        foreach (var unit in Units)
-        {
-            unit.React();
-        }
-
-        Reactions.ClearData();
-        _proceedToNextTurn = true;
+        NextUnit(GameController.CurrentGameController.units, currentUnit).TakeTurn();
     }
 
-    public void RemoveUnit(UnitController unitToRemove)
+    public static void RemoveUnitFromUnitList(UnitController unitToRemove/*, ref UnitController currentUnit*/)
     {
-        if (_nextUnit == unitToRemove)
+        /*if (currentUnit == unitToRemove)
         {
-            SetNextUnit();
-        }
+            currentUnit = NextUnit(units, currentUnit);
+        }*/
 
-        Units.Remove(unitToRemove);
+        GameController.CurrentGameController.units.Remove(unitToRemove);
         
         Destroy(unitToRemove.gameObject);
     }

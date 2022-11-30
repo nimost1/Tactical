@@ -12,7 +12,7 @@ public static class UnitAIUtils
         int targetDistance = 1000000;
         foreach (var unit in units)
         {
-            var distance = GameController.Grid.ShortestMovableLengthBetweenTile(self.position, unit.position);
+            var distance = GridController.ShortestMovableLengthBetweenTile(self.position, unit.position);
             if (distance < targetDistance)
             {
                 targetDistance = distance;
@@ -20,7 +20,7 @@ public static class UnitAIUtils
         }
 
         units = units.FindAll(unit =>
-            GameController.Grid.ShortestMovableLengthBetweenTile(self.position, unit.position) == targetDistance);
+            GridController.ShortestMovableLengthBetweenTile(self.position, unit.position) == targetDistance);
         
         //Pick random unit from list
         return units[Random.Range(0, units.Count)];
@@ -29,7 +29,7 @@ public static class UnitAIUtils
     public static Vector2Int FindMovementTargetTowardsUnit(UnitController self, UnitController target)
     {
         //Find movement target tile
-        var tileList = GameController.Grid.GetReachableFromTile(self.position, self.movementRange);
+        var tileList = GridController.GetReachableFromTile(self.position, self.movementRange);
         Vector2Int targetTile = tileList[0];
         int maxTaxiDistance = GridController.DistanceBetweenTiles(target.position, targetTile);
         float maxEuclideanDistance = Vector2Int.Distance(target.position, targetTile);
