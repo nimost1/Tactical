@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -23,7 +20,7 @@ public class GameController : MonoBehaviour
     public static bool IsHugEnabled;
     public TMP_Text huggingText;
 
-    public Tilemap ground;
+    //public Tilemap ground;
     
     private void Awake()
     {
@@ -37,12 +34,15 @@ public class GameController : MonoBehaviour
         }
 
         Input = GetComponent<PlayerInput>();
-
-        //Find the ground tilemap
-        ground = GameObject.Find("Ground").GetComponent<Tilemap>();
         
         huggingText.enabled = false;
     }
+
+    /*public void FindGroundTilemap()
+    {
+        //Find the ground tilemap
+        ground = GameObject.Find("Ground").GetComponent<Tilemap>();
+    }*/
 
     private void Start()
     {
