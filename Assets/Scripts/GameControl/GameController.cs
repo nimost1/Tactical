@@ -17,8 +17,12 @@ public class GameController : MonoBehaviour
     public int upperBorder = 10;
     public int easternBorder = 10;
 
+    public bool isPaused;
+
     public static bool IsHugEnabled;
     public TMP_Text huggingText;
+
+    [SerializeField] private Canvas _pauseCanvas;
 
     //public Tilemap ground;
     
@@ -58,6 +62,13 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.PausePressed && !LoadController.CurrentLoadController.isLoadingNewScene)
+        {
+            isPaused = !isPaused;
+
+            _pauseCanvas.enabled = isPaused;
+        }
+        
         if (Input.HugPressed)
         {
             IsHugEnabled = !IsHugEnabled;

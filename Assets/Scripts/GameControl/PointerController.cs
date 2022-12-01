@@ -37,6 +37,11 @@ public class PointerController : MonoBehaviour
         ShowPointer();
         while (true)
         {
+            while (GameController.CurrentGameController.isPaused)
+            {
+                yield return null;
+            }
+            
             //Get input
             if (GameController.Input.SelectPressed)
             {

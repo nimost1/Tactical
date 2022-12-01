@@ -7,8 +7,11 @@ using UnityEngine.SceneManagement;
 public class LoadController : MonoBehaviour
 {
     public static LoadController CurrentLoadController;
-    public string firstLevel;
-    private string _currentLevel;
+    public bool isLoadingNewScene;
+    
+    [SerializeField] private string _firstLevel;
+    private string _currentLevel = "";
+    
     
     private LoadSceneParameters _additive = new LoadSceneParameters(LoadSceneMode.Additive);
 
@@ -23,18 +26,31 @@ public class LoadController : MonoBehaviour
             Destroy(this);
         }
 
-        _currentLevel = SceneManager.LoadScene(firstLevel, _additive).name;
+
+        StartCoroutine(LoadLevel(_firstLevel));
     }
 
-    public void LoadLevel(string levelName)
+    public IEnumerator LoadLevel(string levelName)
     {
         //Loads the given level, unloads the current level and sets the new level as the active level.
-        
+
+        isLoadingNewScene = true;
         //Ville det vært en bedre løsning å sette opp ScriptableObjects for å gi litt initialization-info om levelen?
         //Eller skal man sette opp basert på save-state?
+        var loadOperation = SceneManager.LoadSceneAsync(levelName, _additive);
+
+        while (!loadOperation.isDone)
+        {
+            yield return null;
+        }
+        
         if (_currentLevel != "") SceneManager.UnloadSceneAsync(_currentLevel);
-        _currentLevel = levelName;
-        var scene = SceneManager.LoadScene(levelName, _additive);
+        
+        var scene = SceneManager.GetSceneByName(levelName);
+
         SceneManager.SetActiveScene(scene);
+        
+        _currentLevel = levelName;
+        isLoadingNewScene = false;
     }
 }

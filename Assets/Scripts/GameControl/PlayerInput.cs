@@ -18,6 +18,7 @@ public class PlayerInput : MonoBehaviour
     public Vector2 MoveVector { get; private set; }
     public bool SelectPressed { get; private set; }
     public bool HugPressed { get; private set; }
+    public bool PausePressed { get; private set; }
 
     #endregion
     
@@ -27,5 +28,6 @@ public class PlayerInput : MonoBehaviour
         
         SelectPressed = _inputActions.Player.Select.triggered;
         HugPressed = _inputActions.Player.Hug.triggered;
+        PausePressed = _inputActions.Player.Pause.triggered;
     }
 }
