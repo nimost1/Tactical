@@ -70,31 +70,6 @@ public class GridController : MonoBehaviour
         return null;
     }
 
-    public static List<Vector2Int> GetReachableFromTile(Vector2Int startPos, int range)
-    {
-        List<Vector2Int> reachable = new List<Vector2Int>();
-        List<Vector2Int> active = new List<Vector2Int>();
-        
-        reachable.Add(startPos);
-        active.Add(startPos);
-
-        for (int i = 0; i < range; i++)
-        {
-            int count = active.Count;
-            for (int j = 0; j < count; j++)
-            {
-                foreach (var tile in GetAdjacentMovableTiles(active[0]))
-                {
-                    reachable.Add(tile);
-                    active.Add(tile);
-                }
-                active.RemoveAt(0);
-            }
-        }
-
-        return reachable;
-    }
-
     public static int DistanceBetweenTiles(Vector2Int startPos, Vector2Int endPos)
     {
         return Mathf.Abs(startPos.x - endPos.x) + Mathf.Abs(startPos.y - endPos.y);
@@ -234,67 +209,81 @@ public class GridController : MonoBehaviour
         return list;
     }
     
-    public static List<Vector2Int> GetTilesInRange(Vector2Int pos, int range)
+    public static List<Vector2Int> GetTilesInRange(Vector2Int pos, int range, bool includeSelf = true)
     {
-        var open = GetAdjacentTiles(pos);
-        var closed = new List<Vector2Int>();
+        //Returns a list of all the tiles in range of pos, ignoring whether they can be moved to
+        //Includes the starting position by default, but will not if includeSelf is false
+        List<Vector2Int> reachable = new List<Vector2Int>();
+        List<Vector2Int> active = new List<Vector2Int>();
+        
+        reachable.Add(pos);
+        active.Add(pos);
+
         for (int i = 0; i < range; i++)
         {
-            foreach (var position in open)
+            int count = active.Count;
+            for (int j = 0; j < count; j++)
             {
-                if (!closed.Contains(position))
+                foreach (var tile in GetAdjacentTiles(active[0]))
                 {
-                    closed.Add(position);
+                    if (!reachable.Contains(tile)) reachable.Add(tile);
+                    if (!active.Contains(tile)) active.Add(tile);
                 }
-
-                if (i == range - 1)
-                {
-                    break;
-                }
-
-                foreach (var adjacent in GetAdjacentTiles(position))
-                {
-                    if (!open.Contains(adjacent) && !closed.Contains(adjacent))
-                    {
-                        open.Add(adjacent);
-                    }
-                }
+                active.RemoveAt(0);
             }
         }
 
-        return closed;
+        if (!includeSelf) reachable.Remove(pos);
+
+        return reachable;
     }
 
-    public static List<Vector2Int> GetTilesInMovableRange(Vector2Int pos, int range)
+    public static List<Vector2Int> GetMovableTilesInRange(Vector2Int pos, int range, bool includeSelf = true)
     {
-        var open = GetAdjacentMovableTiles(pos);
-        var closed = new List<Vector2Int>();
+        //Returns a list of all the tiles in range of pos, taking whether they can be moved to into account
+        //Includes the starting position by default, but will not if includeSelf is false
+        List<Vector2Int> reachable = new List<Vector2Int>();
+        List<Vector2Int> active = new List<Vector2Int>();
+        
+        reachable.Add(pos);
+        active.Add(pos);
+
         for (int i = 0; i < range; i++)
         {
-            foreach (var position in open)
+            int count = active.Count;
+            for (int j = 0; j < count; j++)
             {
-                if (!closed.Contains(position))
+                foreach (var tile in GetAdjacentMovableTiles(active[0]))
                 {
-                    closed.Add(position);
+                    if (!reachable.Contains(tile)) reachable.Add(tile);
+                    if (!active.Contains(tile)) active.Add(tile);
                 }
-
-                if (i == range - 1)
-                {
-                    break;
-                }
-
-                foreach (var adjacent in GetAdjacentMovableTiles(position))
-                {
-                    if (!open.Contains(adjacent) && !closed.Contains(adjacent))
-                    {
-                        open.Add(adjacent);
-                    }
-                }
+                active.RemoveAt(0);
             }
         }
 
-        return closed;
+        if (!includeSelf) reachable.Remove(pos);
+        
+        return reachable;
     }
 
-    
+    public static List<Vector2Int> GetNeighbors(List<Vector2Int> originalTiles, int range)
+    {
+        //Finds all tiles within the given range of any of the tiles in the list, excluding the tiles in the given list
+        
+        var result = new List<Vector2Int>();
+        
+        foreach (var originalTile in originalTiles)
+        {
+            foreach (var tile in GetTilesInRange(originalTile, range))
+            {
+                if (result.Contains(tile)) continue;
+                if (originalTiles.Contains(tile)) continue;
+                
+                result.Add(tile);
+            }
+        }
+
+        return result;
+    }
 }

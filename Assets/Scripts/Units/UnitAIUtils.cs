@@ -29,7 +29,7 @@ public static class UnitAIUtils
     public static Vector2Int FindMovementTargetTowardsUnit(UnitController self, UnitController target)
     {
         //Find movement target tile
-        var tileList = GridController.GetReachableFromTile(self.position, self.movementRange);
+        var tileList = GridController.GetMovableTilesInRange(self.position, self.movementRange);
         Vector2Int targetTile = tileList[0];
         int maxTaxiDistance = GridController.DistanceBetweenTiles(target.position, targetTile);
         float maxEuclideanDistance = Vector2Int.Distance(target.position, targetTile);

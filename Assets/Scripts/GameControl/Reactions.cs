@@ -36,29 +36,13 @@ public class Reactions : MonoBehaviour
 
     public bool IsUnitInMovementRange(UnitController caller, UnitController other)
     {
-        List<Vector2Int> rangeList = GridController.GetReachableFromTile(caller.position, caller.movementRange);
+        List<Vector2Int> rangeList = GridController.GetMovableTilesInRange(caller.position, caller.movementRange);
 
-        foreach (var pos in rangeList)
-        {
-            if (other.position == pos)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return rangeList.Contains(other.position);
     }
 
     public bool WasUnitWithNameKilled(string unitName)
     {
-        foreach (var unit in killedUnits)
-        {
-            if (unit.unitName == unitName)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return killedUnits.Exists(unit => unit.unitName == unitName);
     }
 }

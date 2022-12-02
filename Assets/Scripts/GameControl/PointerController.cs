@@ -3,13 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(PlayerInput))]
 public class PointerController : MonoBehaviour
 {
-    public GameObject pointerObject;
-    public SpriteRenderer pointerRenderer;
     
+    
+    [SerializeField] private SpriteRenderer _pointerRenderer;
+
+    [SerializeField] private TileBase _movableOverlayTile;
+    [SerializeField] private TileBase _attackableOverlayTile;
+
     private Vector2Int _pointerPosition;
 
     public void SetPointerPosition(Vector2Int pos)
@@ -24,16 +29,49 @@ public class PointerController : MonoBehaviour
 
     public void ShowPointer()
     {
-        pointerRenderer.enabled = true;
+        _pointerRenderer.enabled = true;
     }
 
     public void HidePointer()
     {
-        pointerRenderer.enabled = false;
+        _pointerRenderer.enabled = false;
     }
 
-    public IEnumerator SelectPositionWithPointer()
+    private void ShowMovementAndAttackUI(Vector2Int pos, int movementRange, int attackRange, Tilemap overlayTilemap)
     {
+        var movableTiles = GridController.GetMovableTilesInRange(pos, movementRange, false);
+        
+        ShowValidMovementSpaces(movableTiles, overlayTilemap);
+
+        var attackableTiles = GridController.GetNeighbors(movableTiles, attackRange);
+        
+        ShowAttackableSpaces(attackableTiles, overlayTilemap);
+    }
+
+    private void ShowValidMovementSpaces(List<Vector2Int> positions, Tilemap overlayTilemap)
+    {
+        foreach (Vector3Int tile in positions)
+        {
+            overlayTilemap.SetTile(tile, _movableOverlayTile);
+        }
+    }
+
+    private void ShowAttackableSpaces(List<Vector2Int> positions, Tilemap overlayTilemap)
+    {
+        foreach (Vector3Int tile in positions)
+        {
+            overlayTilemap.SetTile(tile, _attackableOverlayTile);
+        }
+    }
+
+    private void ClearOverlayTilemap(Tilemap overlayTilemap)
+    {
+        overlayTilemap.ClearAllTiles();
+    }
+
+    public IEnumerator SelectPositionWithPointer(Vector2Int pos, int movementRange, int attackRange, Tilemap overlayTilemap)
+    {
+        ShowMovementAndAttackUI(pos, movementRange, attackRange, overlayTilemap);
         ShowPointer();
         while (true)
         {
@@ -61,9 +99,12 @@ public class PointerController : MonoBehaviour
                 _pointerPosition.x -= 1;
             }
 
-            pointerObject.transform.position = GridController.GridCoordinatesToWorldCoordinates(_pointerPosition);
+            _pointerRenderer.transform.position = GridController.GridCoordinatesToWorldCoordinates(_pointerPosition);
             
             yield return null;
         }
+        
+        HidePointer();
+        ClearOverlayTilemap(overlayTilemap);
     }
 }

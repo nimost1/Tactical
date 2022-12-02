@@ -21,7 +21,9 @@ public class GameController : MonoBehaviour
 
     public static bool IsHugEnabled;
     public TMP_Text huggingText;
-
+    
+    public Tilemap overlayTilemap;
+    
     [SerializeField] private Canvas _pauseCanvas;
 
     //public Tilemap ground;

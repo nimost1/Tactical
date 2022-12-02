@@ -22,7 +22,8 @@ public class PlayerCharacter : UnitController
         do
         {
             //Movement
-            yield return GameController.Pointer.SelectPositionWithPointer();
+            yield return GameController.Pointer.SelectPositionWithPointer(position, movementRange, 1,
+                GameController.CurrentGameController.overlayTilemap);
 
             target = GameController.Pointer.GetPointerPosition();
         } while (target == position
@@ -30,9 +31,7 @@ public class PlayerCharacter : UnitController
                      && !GridController.CanMoveTo(position, target, movementRange))
                  || (GridController.IsTileOccupied(target)
                      && !GridController.CanAttackMelee(position, target, movementRange)));
-        
-        GameController.Pointer.HidePointer();
-        
+
         //If there is a unit on the target space, move to it and attack. If not, move to the target.
         if (GridController.IsTileOccupied(target))
         {
