@@ -1,22 +1,57 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+
 
 public class MenuController : MonoBehaviour
 {
-    //Need to figure out which kinds of menu options are necessary.
-    public enum MenuOptions
+    [SerializeField] private Canvas _menuCanvas;
+    [SerializeField] private GameObject[] _buttons;
+    [SerializeField] private int _activeButtons;
+
+    public delegate void DelegateFunction();
+
+    public void DisplayMenu()
     {
+        _menuCanvas.enabled = true;
         
+        GameController.CurrentGameController.EventSystem.SetSelectedGameObject(_buttons[0]);
     }
 
-    public void CreateMenu(Dictionary<MenuOptions, string> buttons)
+    public void HideMenu()
     {
-        foreach (var button in buttons)
+        _menuCanvas.enabled = false;
+    }
+
+    public void ResetMenu()
+    {
+        for (int i = _activeButtons - 1; i >= 0; i--)
         {
-            //Spawn button calling a function based on the MenuOption
-            //Potential problem: No arguments to functions
-            continue;
+            _buttons[i].GetComponent<Button>().onClick.RemoveAllListeners();
+            _buttons[i].SetActive(false);
+            _buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = "";
         }
+
+        _activeButtons = 0;
+    }
+
+    public void AddButton(string buttonText, DelegateFunction callbackFunction)
+    {
+        //Creates buttons with the given text that call the given function when pressed
+        _buttons[_activeButtons].SetActive(true);
+
+        Button currentButton = _buttons[_activeButtons].GetComponent<Button>();
+
+        currentButton.onClick.RemoveAllListeners();
+        currentButton.onClick.AddListener(callbackFunction.Invoke);
+        currentButton.GetComponentInChildren<TextMeshProUGUI>().text = buttonText;
+
+        _activeButtons++;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -8,7 +9,7 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(PlayerInput))]
 public class PointerController : MonoBehaviour
 {
-    
+    //TODO: Record the path to take.
     
     [SerializeField] private SpriteRenderer _pointerRenderer;
 
@@ -16,10 +17,12 @@ public class PointerController : MonoBehaviour
     [SerializeField] private TileBase _attackableOverlayTile;
 
     private Vector2Int _pointerPosition;
+    public int targetIndex;
 
     public void SetPointerPosition(Vector2Int pos)
     {
         _pointerPosition = pos;
+        _pointerRenderer.transform.position = GridController.GridCoordinatesToWorldCoordinates(_pointerPosition);
     }
 
     public Vector2Int GetPointerPosition()
@@ -37,14 +40,9 @@ public class PointerController : MonoBehaviour
         _pointerRenderer.enabled = false;
     }
 
-    private void ShowMovementAndAttackUI(Vector2Int pos, int movementRange, int attackRange, Tilemap overlayTilemap)
+    private void ShowMovementAndAttackUI(List<Vector2Int> movableTiles, List<Vector2Int> attackableTiles, Tilemap overlayTilemap)
     {
-        var movableTiles = GridController.GetMovableTilesInRange(pos, movementRange, false);
-        
         ShowValidMovementSpaces(movableTiles, overlayTilemap);
-
-        var attackableTiles = GridController.GetNeighbors(movableTiles, attackRange);
-        
         ShowAttackableSpaces(attackableTiles, overlayTilemap);
     }
 
@@ -71,20 +69,33 @@ public class PointerController : MonoBehaviour
 
     public IEnumerator SelectPositionWithPointer(Vector2Int pos, int movementRange, int attackRange, Tilemap overlayTilemap)
     {
-        ShowMovementAndAttackUI(pos, movementRange, attackRange, overlayTilemap);
+        var movableTiles = GridController.GetMovableTilesInRange(pos, movementRange);
+        var attackableTiles = GridController.GetAttackableTiles(pos, movementRange, attackRange);
+        attackableTiles = attackableTiles.Except(movableTiles).ToList();
+        
+        ShowMovementAndAttackUI(movableTiles, attackableTiles, overlayTilemap);
         ShowPointer();
         while (true)
         {
+            if (GameController.CurrentGameController.Input.BackPressed)
+            {
+                SetPointerPosition(pos);
+            }
+            
             while (GameController.CurrentGameController.isPaused)
             {
                 yield return null;
             }
             
             //Get input
-            if (GameController.Input.SelectPressed)
+            if (GameController.CurrentGameController.Input.SelectPressed)
             {
-                break;
+                if (movableTiles.Contains(_pointerPosition)) break;
+                
+                if (GridController.IsTileOccupied(_pointerPosition) && attackableTiles.Contains(_pointerPosition)) break;
             }
+            
+            //TODO: Endre hardkodede kontroller til å bruke input-scriptet
             if (Keyboard.current.wKey.wasPressedThisFrame && _pointerPosition.y != GameController.CurrentGameController.upperBorder - 1)
             {
                 _pointerPosition.y += 1;
@@ -106,5 +117,57 @@ public class PointerController : MonoBehaviour
         
         HidePointer();
         ClearOverlayTilemap(overlayTilemap);
+    }
+
+    public IEnumerator SelectFromListOfTargets(List<UnitController> targets)
+    {
+        targetIndex = 0;
+        
+        SetPointerPosition(targets[0].position);
+        ShowPointer();
+
+        while (true)
+        {
+            if (GameController.CurrentGameController.Input.BackPressed)
+            {
+                HidePointer();
+                break;
+            }
+            
+            if (GameController.CurrentGameController.Input.SelectPressed)
+            {
+                break;
+            }
+            
+            if (GameController.CurrentGameController.Input.CycleLeftPressed)
+            {
+                if (targetIndex == 0)
+                {
+                    targetIndex = targets.Count - 1;
+                }
+                else
+                {
+                    targetIndex--;
+                }
+                
+                SetPointerPosition(targets[targetIndex].position);
+            }
+            
+            if (GameController.CurrentGameController.Input.CycleRightPressed)
+            {
+                if (targetIndex == targets.Count - 1)
+                {
+                    targetIndex = 0;
+                }
+                else
+                {
+                    targetIndex++;
+                }
+                
+                SetPointerPosition(targets[targetIndex].position);
+            }
+
+            yield return null;
+        }
     }
 }

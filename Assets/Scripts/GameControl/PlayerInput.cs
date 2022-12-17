@@ -17,9 +17,12 @@ public class PlayerInput : MonoBehaviour
         
     public Vector2 MoveVector { get; private set; }
     public bool SelectPressed { get; private set; }
-    public bool HugPressed { get; private set; }
     public bool PausePressed { get; private set; }
+    public bool BackPressed { get; private set; }
+    public bool CycleLeftPressed { get; private set; }
+    public bool CycleRightPressed { get; private set; }
 
+    
     #endregion
     
     private void Update()
@@ -27,7 +30,10 @@ public class PlayerInput : MonoBehaviour
         MoveVector = _inputActions.Player.Move.ReadValue<Vector2>();
         
         SelectPressed = _inputActions.Player.Select.triggered;
-        HugPressed = _inputActions.Player.Hug.triggered;
         PausePressed = _inputActions.Player.Pause.triggered;
+        BackPressed = _inputActions.Player.Back.triggered;
+
+        CycleLeftPressed = _inputActions.Player.CycleLeft.triggered;
+        CycleRightPressed = _inputActions.Player.CycleRight.triggered;
     }
 }

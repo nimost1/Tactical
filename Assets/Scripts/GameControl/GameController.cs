@@ -1,26 +1,25 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 
-[RequireComponent(typeof(PointerController), typeof(PlayerInput), typeof(Reactions))]
+[RequireComponent(typeof(PlayerInteractionController), typeof(PlayerInput), typeof(Reactions))]
 public class GameController : MonoBehaviour
 {
     public static GameController CurrentGameController;
     
     public List<UnitController> units;
     
-    public static PlayerInput Input;
-    public static PointerController Pointer;
+    public PlayerInput Input;
+    public PlayerInteractionController PlayerInteraction;
+    public EventSystem EventSystem;
 
     //The height and width of the tilemap, i.e., index [EasternBorder, UpperBorder] does not exist.
     public int upperBorder = 10;
     public int easternBorder = 10;
 
     public bool isPaused;
-
-    public static bool IsHugEnabled;
-    public TMP_Text huggingText;
     
     public Tilemap overlayTilemap;
     
@@ -40,8 +39,7 @@ public class GameController : MonoBehaviour
         }
 
         Input = GetComponent<PlayerInput>();
-        
-        huggingText.enabled = false;
+        PlayerInteraction = GetComponent<PlayerInteractionController>();
     }
 
     /*public void FindGroundTilemap()
@@ -52,8 +50,6 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        Pointer = GetComponent<PointerController>();
-        
         units.Sort((a, b) => { if (a == b) return 0;
             return a.turnOrder > b.turnOrder ? 1 : -1; });
 
@@ -69,19 +65,6 @@ public class GameController : MonoBehaviour
             isPaused = !isPaused;
 
             _pauseCanvas.enabled = isPaused;
-        }
-        
-        if (Input.HugPressed)
-        {
-            IsHugEnabled = !IsHugEnabled;
-            if (IsHugEnabled)
-            {
-                huggingText.enabled = true;
-            }
-            else
-            {
-                huggingText.enabled = false;
-            }
         }
     }
 

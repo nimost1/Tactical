@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Back",
+                    "type": "Button",
+                    "id": "10de435b-8c4a-4c5f-a119-4b20eb650e23",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Move",
                     "type": "Value",
                     "id": "b5ab9d56-7368-4b0c-a182-7776d54cd139",
@@ -24,18 +33,27 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Hug",
+                    "name": "Pause",
                     "type": "Button",
-                    "id": "e7d9d115-5ba2-445e-9155-b4bf462f6c49",
+                    "id": "79e8216b-c5b7-4e02-aa98-2bd158f7f505",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pause",
+                    "name": "CycleLeft",
                     "type": "Button",
-                    "id": "79e8216b-c5b7-4e02-aa98-2bd158f7f505",
+                    "id": "1903b6b5-baef-4928-8320-1134cfc8be7d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CycleRight",
+                    "type": "Button",
+                    "id": "7e97ece7-0c0a-403b-8ea2-fbcf281d1836",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -166,28 +184,6 @@
                 },
                 {
                     "name": "",
-                    "id": "768778b6-60cd-4b26-83a9-4b8056a7cf7c",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hug",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e1bd62b7-459d-44e3-b295-b71badb86f5c",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hug",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "07e1a3ea-106e-4fc5-a7e4-7a7827dea2f3",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -216,6 +212,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9265e362-c280-401a-9135-c77a84be167a",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7c8183fc-186e-4282-b2c8-bddd9e7e371f",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fe9e8a82-2c49-4dfb-b2f9-ad66112729a1",
+                    "path": "<Keyboard>/backspace",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

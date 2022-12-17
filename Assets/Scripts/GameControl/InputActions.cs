@@ -37,6 +37,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Back"",
+                    ""type"": ""Button"",
+                    ""id"": ""10de435b-8c4a-4c5f-a119-4b20eb650e23"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""b5ab9d56-7368-4b0c-a182-7776d54cd139"",
@@ -46,18 +55,27 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Hug"",
+                    ""name"": ""Pause"",
                     ""type"": ""Button"",
-                    ""id"": ""e7d9d115-5ba2-445e-9155-b4bf462f6c49"",
+                    ""id"": ""79e8216b-c5b7-4e02-aa98-2bd158f7f505"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Pause"",
+                    ""name"": ""CycleLeft"",
                     ""type"": ""Button"",
-                    ""id"": ""79e8216b-c5b7-4e02-aa98-2bd158f7f505"",
+                    ""id"": ""1903b6b5-baef-4928-8320-1134cfc8be7d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CycleRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""7e97ece7-0c0a-403b-8ea2-fbcf281d1836"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -188,28 +206,6 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""768778b6-60cd-4b26-83a9-4b8056a7cf7c"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Hug"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e1bd62b7-459d-44e3-b295-b71badb86f5c"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Hug"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""07e1a3ea-106e-4fc5-a7e4-7a7827dea2f3"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
@@ -240,6 +236,39 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9265e362-c280-401a-9135-c77a84be167a"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7c8183fc-186e-4282-b2c8-bddd9e7e371f"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe9e8a82-2c49-4dfb-b2f9-ad66112729a1"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -249,9 +278,11 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
+        m_Player_Back = m_Player.FindAction("Back", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-        m_Player_Hug = m_Player.FindAction("Hug", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_CycleLeft = m_Player.FindAction("CycleLeft", throwIfNotFound: true);
+        m_Player_CycleRight = m_Player.FindAction("CycleRight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -312,17 +343,21 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Select;
+    private readonly InputAction m_Player_Back;
     private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_Hug;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_CycleLeft;
+    private readonly InputAction m_Player_CycleRight;
     public struct PlayerActions
     {
         private @InputActions m_Wrapper;
         public PlayerActions(@InputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Select => m_Wrapper.m_Player_Select;
+        public InputAction @Back => m_Wrapper.m_Player_Back;
         public InputAction @Move => m_Wrapper.m_Player_Move;
-        public InputAction @Hug => m_Wrapper.m_Player_Hug;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        public InputAction @CycleLeft => m_Wrapper.m_Player_CycleLeft;
+        public InputAction @CycleRight => m_Wrapper.m_Player_CycleRight;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -335,15 +370,21 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @Select.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelect;
                 @Select.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelect;
                 @Select.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelect;
+                @Back.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
+                @Back.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
+                @Back.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
                 @Move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                @Hug.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHug;
-                @Hug.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHug;
-                @Hug.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHug;
                 @Pause.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
                 @Pause.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
                 @Pause.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
+                @CycleLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleLeft;
+                @CycleLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleLeft;
+                @CycleLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleLeft;
+                @CycleRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleRight;
+                @CycleRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleRight;
+                @CycleRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleRight;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -351,15 +392,21 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @Select.started += instance.OnSelect;
                 @Select.performed += instance.OnSelect;
                 @Select.canceled += instance.OnSelect;
+                @Back.started += instance.OnBack;
+                @Back.performed += instance.OnBack;
+                @Back.canceled += instance.OnBack;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
-                @Hug.started += instance.OnHug;
-                @Hug.performed += instance.OnHug;
-                @Hug.canceled += instance.OnHug;
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
+                @CycleLeft.started += instance.OnCycleLeft;
+                @CycleLeft.performed += instance.OnCycleLeft;
+                @CycleLeft.canceled += instance.OnCycleLeft;
+                @CycleRight.started += instance.OnCycleRight;
+                @CycleRight.performed += instance.OnCycleRight;
+                @CycleRight.canceled += instance.OnCycleRight;
             }
         }
     }
@@ -367,8 +414,10 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnSelect(InputAction.CallbackContext context);
+        void OnBack(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
-        void OnHug(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnCycleLeft(InputAction.CallbackContext context);
+        void OnCycleRight(InputAction.CallbackContext context);
     }
 }

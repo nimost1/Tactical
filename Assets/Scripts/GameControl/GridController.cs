@@ -157,19 +157,36 @@ public class GridController : MonoBehaviour
         var length = ShortestMovableLengthBetweenTile(startPos, endPos);
         return length != 0 && length <= range && !IsTileOccupied(endPos) /*&& GetTerrainType(endPos).IsMovable*/;
     }
-
-    public static bool CanAttackMelee(Vector2Int startPos, Vector2Int endPos, int range)
+    
+    public static List<UnitController> GetUnitsInAttackRange(Vector2Int startPos, params int[] attackRanges)
     {
-        //Returns true if a one-range attack can hit the given tile
-        foreach (var tile in GetAdjacentMovableTiles(endPos))
+        var unitsInRange = new List<UnitController>();
+        
+        foreach (var unit in GameController.CurrentGameController.units)
         {
-            if (CanMoveTo(startPos, tile, range))
+            //If the unit is physically there and in attack range, add it to the list
+            if (unit.canOccupyTile && attackRanges.Contains(DistanceBetweenTiles(startPos, unit.position)))
+                unitsInRange.Add(unit);
+        }
+
+        return unitsInRange;
+    }
+
+    public static List<Vector2Int> GetAttackableTiles(Vector2Int startPos, int movementRange, params int[] attackRanges)
+    {
+        var movable = GetMovableTilesInRange(startPos, movementRange);
+
+        var attackable = new List<Vector2Int>();
+        
+        foreach (var targetTile in GetTilesInRange(startPos, movementRange + attackRanges.Max()))
+        {
+            if (movable.Exists(movableTile => attackRanges.Contains(DistanceBetweenTiles(movableTile, targetTile))))
             {
-                return true;
+                attackable.Add(targetTile);
             }
         }
 
-        return false;
+        return attackable;
     }
 
     public class TerrainObject
