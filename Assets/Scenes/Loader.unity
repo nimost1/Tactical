@@ -806,6 +806,7 @@ MonoBehaviour:
   isPaused: 0
   overlayTilemap: {fileID: 890386249}
   _pauseCanvas: {fileID: 98107429}
+  unitBase: {fileID: 1869652724832378953, guid: e8b0db3b90e58e64bb7c2f9dca081344, type: 3}
 --- !u!114 &894194942
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -94,18 +94,19 @@ public class PointerController : MonoBehaviour
                 
                 if (GridController.IsTileOccupied(_pointerPosition) && attackableTiles.Contains(_pointerPosition)) break;
             }
+
+            var moveVector = GameController.CurrentGameController.Input.MoveVector;
             
-            //TODO: Endre hardkodede kontroller til å bruke input-scriptet
-            if (Keyboard.current.wKey.wasPressedThisFrame && _pointerPosition.y != GameController.CurrentGameController.upperBorder - 1)
+            if (moveVector.y > 0.7f && _pointerPosition.y != GameController.CurrentGameController.upperBorder - 1)
             {
                 _pointerPosition.y += 1;
-            }else if (Keyboard.current.sKey.wasPressedThisFrame && _pointerPosition.y != 0)
+            }else if (moveVector.y < -0.7f && _pointerPosition.y != 0)
             {
                 _pointerPosition.y -= 1;
-            }else if (Keyboard.current.dKey.wasPressedThisFrame && _pointerPosition.x != GameController.CurrentGameController.easternBorder - 1)
+            }else if (moveVector.x > 0.7f && _pointerPosition.x != GameController.CurrentGameController.easternBorder - 1)
             {
                 _pointerPosition.x += 1;
-            }else if (Keyboard.current.aKey.wasPressedThisFrame && _pointerPosition.x != 0)
+            }else if (moveVector.x < -0.7f && _pointerPosition.x != 0)
             {
                 _pointerPosition.x -= 1;
             }

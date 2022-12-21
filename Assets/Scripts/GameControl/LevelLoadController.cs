@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LoadController : MonoBehaviour
+public class LevelLoadController : MonoBehaviour
 {
-    public static LoadController CurrentLoadController;
+    public static LevelLoadController CurrentLevelLoadController;
     public bool isLoadingNewScene;
     
     [SerializeField] private string _firstLevel;
@@ -17,9 +17,9 @@ public class LoadController : MonoBehaviour
 
     private void Awake()
     {
-        if (CurrentLoadController == null)
+        if (CurrentLevelLoadController == null)
         {
-            CurrentLoadController = this;
+            CurrentLevelLoadController = this;
         }
         else
         {
@@ -52,5 +52,6 @@ public class LoadController : MonoBehaviour
         
         _currentLevel = levelName;
         isLoadingNewScene = false;
+        SaveController.Save("testSave.txt");
     }
 }

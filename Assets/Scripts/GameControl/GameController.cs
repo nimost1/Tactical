@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour
     public Tilemap overlayTilemap;
     
     [SerializeField] private Canvas _pauseCanvas;
+    
+    public GameObject unitBase;
 
     //public Tilemap ground;
     
@@ -60,7 +62,7 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.PausePressed && !LoadController.CurrentLoadController.isLoadingNewScene)
+        if (Input.PausePressed && !LevelLoadController.CurrentLevelLoadController.isLoadingNewScene)
         {
             isPaused = !isPaused;
 
