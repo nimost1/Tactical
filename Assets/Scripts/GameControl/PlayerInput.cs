@@ -27,8 +27,15 @@ public class PlayerInput : MonoBehaviour
     
     private void Update()
     {
-        MoveVector = _inputActions.Player.Move.ReadValue<Vector2>();
-        
+        if (_inputActions.Player.Move.triggered)
+        {
+            MoveVector = _inputActions.Player.Move.ReadValue<Vector2>();
+        }
+        else
+        {
+            MoveVector = Vector2.zero;
+        }
+
         SelectPressed = _inputActions.Player.Select.triggered;
         PausePressed = _inputActions.Player.Pause.triggered;
         BackPressed = _inputActions.Player.Back.triggered;

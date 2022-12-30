@@ -74,7 +74,7 @@ public class PointerController : MonoBehaviour
         attackableTiles = attackableTiles.Except(movableTiles).ToList();
         
         ShowMovementAndAttackUI(movableTiles, attackableTiles, overlayTilemap);
-        ShowPointer();
+        
         while (true)
         {
             if (GameController.CurrentGameController.Input.BackPressed)
@@ -116,7 +116,6 @@ public class PointerController : MonoBehaviour
             yield return null;
         }
         
-        HidePointer();
         ClearOverlayTilemap(overlayTilemap);
     }
 
@@ -125,7 +124,6 @@ public class PointerController : MonoBehaviour
         targetIndex = 0;
         
         SetPointerPosition(targets[0].position);
-        ShowPointer();
 
         while (true)
         {

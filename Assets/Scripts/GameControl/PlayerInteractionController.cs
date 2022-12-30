@@ -65,6 +65,7 @@ public class PlayerInteractionController : MonoBehaviour
         //The point where behaviour resumes if player tries to go back to start
         while (true)
         {
+            Pointer.ShowPointer();
             //Select a position with pointer
             yield return Pointer.SelectPositionWithPointer(startPosition, movementRange,
                 1, GameController.CurrentGameController.overlayTilemap);
@@ -195,6 +196,8 @@ public class PlayerInteractionController : MonoBehaviour
                 }
             }
 
+            Pointer.HidePointer();
+            
             break;
         }
     }
