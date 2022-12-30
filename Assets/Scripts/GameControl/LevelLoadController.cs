@@ -9,8 +9,8 @@ public class LevelLoadController : MonoBehaviour
     public static LevelLoadController CurrentLevelLoadController;
     public bool isLoadingNewScene;
     
-    [SerializeField] private string _firstLevel;
-    private string _currentLevel = "";
+    public string firstLevel;
+    public string currentLevel = "";
     
     
     private LoadSceneParameters _additive = new LoadSceneParameters(LoadSceneMode.Additive);
@@ -27,7 +27,7 @@ public class LevelLoadController : MonoBehaviour
         }
 
 
-        StartCoroutine(LoadLevel(_firstLevel));
+        //StartCoroutine(LoadLevel(_firstLevel));
     }
 
     public IEnumerator LoadLevel(string levelName)
@@ -44,14 +44,21 @@ public class LevelLoadController : MonoBehaviour
             yield return null;
         }
         
-        if (_currentLevel != "") SceneManager.UnloadSceneAsync(_currentLevel);
+        if (currentLevel != "") SceneManager.UnloadSceneAsync(currentLevel);
         
         var scene = SceneManager.GetSceneByName(levelName);
 
         SceneManager.SetActiveScene(scene);
         
-        _currentLevel = levelName;
+        currentLevel = levelName;
         isLoadingNewScene = false;
-        SaveController.Save("testSave.txt");
+    }
+
+    public IEnumerator WaitForLevelToLoad()
+    {
+        while (isLoadingNewScene)
+        {
+            yield return null;
+        }
     }
 }

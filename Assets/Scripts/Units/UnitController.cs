@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 
@@ -9,18 +10,18 @@ public class UnitController : MonoBehaviour
     #region UNIQUE VARIABLES
 
     public bool canOccupyTile;
-    public string unitName;
+    [SaveField] public string unitName;
     public int maxHitPoints;
     public int movementRange;
-    public bool isControlledByPlayer;
+    [SaveField] public bool isControlledByPlayer;
     public int turnOrder;//Low number means early turn.
     
     #endregion
 
     #region GAMEPLAY VARIABLES
 
-    public Vector2Int position;
-    public int hitPoints;
+    [SaveField] public Vector2Int position;
+    [SaveField] public int hitPoints;
     
     #endregion
 
@@ -143,5 +144,35 @@ public class UnitController : MonoBehaviour
     protected void Hug(UnitController self, UnitController target)
     {
         target.AcceptHug(self);
+    }
+    
+    //Returns all members that should be saved
+    public string GetSaveData()
+    {
+        var typeInfo = GetType();
+        var saveData = $"UNIT:{typeInfo.Name}\n";
+        
+        foreach (var field in typeInfo.GetFields())
+        {
+            if (field.GetCustomAttributes(typeof(SaveFieldAttribute), true).Length != 0)
+            {
+                var value = field.GetValue(this);
+                if (value is int) saveData += "INT:";
+                else if (value is bool) saveData += "BOOL:";
+                else if (value is string) saveData += "STRING:";
+                else if (value is Vector2Int) saveData += "VECTOR2INT:";
+                saveData += $"{field.Name}:{value}\n";
+            }
+        }
+
+        saveData += "\n";
+
+        return saveData;
+    }
+
+    public virtual void UpdateAfterLoad()
+    {
+        transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
+        _healthText.text = hitPoints.ToString();
     }
 }

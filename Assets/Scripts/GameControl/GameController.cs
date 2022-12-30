@@ -20,6 +20,9 @@ public class GameController : MonoBehaviour
     public int easternBorder = 10;
 
     public bool isPaused;
+
+    public int turnNumber;
+    public string saveSlotName;
     
     public Tilemap overlayTilemap;
     
@@ -52,12 +55,13 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        units.Sort((a, b) => { if (a == b) return 0;
-            return a.turnOrder > b.turnOrder ? 1 : -1; });
-
-        AnimationController.InitializeState();
+        SaveController.LoadMostRecentSave();
         
-        units[0].TakeTurn();
+        //TurnController.SortUnits(units);
+
+        //AnimationController.InitializeState();
+        
+        //units[0].TakeTurn();
     }
 
     private void Update()

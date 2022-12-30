@@ -784,7 +784,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLoadingNewScene: 0
-  _firstLevel: SampleScene
+  firstLevel: SampleScene
+  currentLevel: 
 --- !u!114 &894194941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -804,6 +805,8 @@ MonoBehaviour:
   upperBorder: 10
   easternBorder: 10
   isPaused: 0
+  turnNumber: 0
+  saveSlotName: save
   overlayTilemap: {fileID: 890386249}
   _pauseCanvas: {fileID: 98107429}
   unitBase: {fileID: 1869652724832378953, guid: e8b0db3b90e58e64bb7c2f9dca081344, type: 3}

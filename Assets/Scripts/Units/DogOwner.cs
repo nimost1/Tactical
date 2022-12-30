@@ -6,7 +6,7 @@ using UnityEngine;
 public class DogOwner : UnitController
 {
     private bool _isAngry;
-    public bool isFriendly;
+    [SaveField] public bool isFriendly;
 
     protected override void Initialize()
     {
