@@ -55,7 +55,7 @@ public class UnitController : MonoBehaviour
         }
         else
         {
-            TakeAITurn();
+            StartCoroutine(TakeAITurn());
             FinishTurn();
         }
     }
@@ -78,10 +78,11 @@ public class UnitController : MonoBehaviour
         FinishTurn();
     }
 
-    protected virtual void TakeAITurn()
+    protected virtual IEnumerator TakeAITurn()
     {
         print("Unimplemented TakeAITurn");
-        return;
+        yield return null;
+        FinishTurn();
     }
 
     public virtual void React()
@@ -90,9 +91,10 @@ public class UnitController : MonoBehaviour
         return;
     }
 
-    protected virtual void AcceptHug(UnitController hugger)
+    protected virtual bool AcceptHug(UnitController hugger)
     {
         print("Unimplemented AcceptHug-function");
+        return false;
     }
 
     public void TakeDamageHit(int damage)
@@ -138,11 +140,14 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    protected void Hug(UnitController self, UnitController target)
+    private bool Hug(UnitController target)
     {
-        target.AcceptHug(self);
+        //Returns true if the hug results in the hugger moving onto the target's space.
+        return target.AcceptHug(this);
     }
-    
+
+    #region SAVE_AND_LOAD
+
     //Returns all members that should be saved
     public string GetSaveData()
     {
@@ -172,4 +177,98 @@ public class UnitController : MonoBehaviour
         transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
         _healthText.text = hitPoints.ToString();
     }
+    
+    #endregion
+    
+    #region ANIMATION
+    protected IEnumerator MoveAlongPath(List<Vector2Int> path)
+    {
+        if (path.Count == 0) yield break;
+        path.Insert(0, position);
+        
+        var index = 1;
+        var startTime = Time.time;
+        var timePerTile = 0.5f;
+
+        while (index < path.Count)
+        {
+            var timePassed = Time.time - startTime;
+            
+            var xPosition = Mathf.Lerp(path[index - 1].x, path[index].x, timePassed / timePerTile - timePerTile * (index - 1));
+            var yPosition = Mathf.Lerp(path[index - 1].y, path[index].y, timePassed / timePerTile - timePerTile * (index - 1));
+
+            transform.position =
+                GridController.GridCoordinatesToWorldCoordinates(new Vector2(xPosition, yPosition));
+            
+            if (timePassed >= timePerTile * index)
+            {
+                index++;
+            }
+            
+            yield return null;
+        }
+
+        transform.position = GridController.GridCoordinatesToWorldCoordinates(path[path.Count - 1]);
+        position = path[path.Count - 1];
+    }
+
+    protected IEnumerator AnimateMeleeAttack(UnitController target, int damage)
+    {
+        var startTime = Time.time;
+        var attackTime = 0.4f;
+        var largestOffset = (Vector2)(target.position - position) / 2f;
+        
+        while (Time.time < startTime + attackTime * 0.5f)
+        {
+            var fractionOfTimePassed = (Time.time - startTime) / attackTime;
+            var animatedPosition = position + fractionOfTimePassed * 2f * largestOffset;
+            transform.position = GridController.GridCoordinatesToWorldCoordinates(animatedPosition);
+            yield return null;
+        }
+
+        Attack(target, 1);
+
+        while (Time.time < startTime + attackTime)
+        {
+            var fractionOfTimePassed = (Time.time - startTime) / attackTime;
+            var animatedPosition = position + (2f - fractionOfTimePassed * 2f) * largestOffset;
+            transform.position = GridController.GridCoordinatesToWorldCoordinates(animatedPosition);
+            yield return null;
+        }
+
+        transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
+    }
+
+    protected IEnumerator AnimateHug(UnitController target)
+    {
+        var startTime = Time.time;
+        var attackTime = 0.4f;
+        var largestOffset = (Vector2)(target.position - position);
+        
+        while (Time.time < startTime + attackTime * 0.5f)
+        {
+            var fractionOfTimePassed = (Time.time - startTime) / attackTime;
+            var animatedPosition = position + fractionOfTimePassed * 2f * largestOffset;
+            transform.position = GridController.GridCoordinatesToWorldCoordinates(animatedPosition);
+            yield return null;
+        }
+
+        if (Hug(target))
+        {
+            transform.position = GridController.GridCoordinatesToWorldCoordinates(target.position);
+            yield break;
+        }
+
+        while (Time.time < startTime + attackTime)
+        {
+            var fractionOfTimePassed = (Time.time - startTime) / attackTime;
+            var animatedPosition = position + (2f - fractionOfTimePassed * 2f) * largestOffset;
+            transform.position = GridController.GridCoordinatesToWorldCoordinates(animatedPosition);
+            yield return null;
+        }
+
+        transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
+
+    }
+    #endregion
 }

@@ -18,19 +18,21 @@ public class DogOwner : UnitController
         turnOrder = 1;
     }
     
-    protected override void TakeAITurn()
+    protected override IEnumerator TakeAITurn()
     {
-        if (!_isAngry) return;
+        if (!_isAngry) yield break;
 
         foreach (var pos in GridController.GetAdjacentTiles(position))
         {
             if (GridController.IsTileOccupiedByUnit(pos) &&
                 GridController.GetUnitOnSpace(pos).unitName == "Player")
             {
-                Attack(pos, 3);
+                yield return AnimateMeleeAttack(GridController.GetUnitOnSpace(pos), 3);
                 break;
             }
         }
+        
+        FinishTurn();
     }
 
     public override void React()
@@ -41,12 +43,13 @@ public class DogOwner : UnitController
         }
     }
 
-    protected override void AcceptHug(UnitController hugger)
+    protected override bool AcceptHug(UnitController hugger)
     {
         if (_isAngry)
         {
             Attack(hugger, 3);
             print("Player took 3 damage while hugging.");
+            return false;
         }
         else
         {
@@ -57,6 +60,8 @@ public class DogOwner : UnitController
             {
                 dog.isPassive = true;
             }
+
+            return false;
         }
     }
 }

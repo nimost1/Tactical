@@ -25,22 +25,17 @@ public class PlayerCharacter : UnitController
         switch (result.MenuChoice)
         {
             case PlayerInteractionController.MenuOptions.Wait:
-                yield return AnimationController.MoveAlongPath(this,
-                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
+                yield return MoveAlongPath(GridController.ShortestMovablePathBetweenTiles(position, result.MovementTarget));
                 break;
             case PlayerInteractionController.MenuOptions.Attack:
-                yield return AnimationController.MoveAlongPath(this,
-                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
+                yield return MoveAlongPath(GridController.ShortestMovablePathBetweenTiles(position, result.MovementTarget));
                 
-                yield return AnimationController.AnimateMeleeAttack(this, GridController.GetUnitOnSpace(result.ActionTarget));
-                Attack(GridController.GetUnitOnSpace(result.ActionTarget), 1);
+                yield return AnimateMeleeAttack(GridController.GetUnitOnSpace(result.ActionTarget), 1);
                 break;
             case PlayerInteractionController.MenuOptions.Hug:
-                yield return AnimationController.MoveAlongPath(this,
-                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
+                yield return MoveAlongPath(GridController.ShortestMovablePathBetweenTiles(position, result.MovementTarget));
 
-                yield return AnimationController.AnimateHug(this);
-                Hug(this, GridController.GetUnitOnSpace(result.ActionTarget));
+                yield return AnimateHug(GridController.GetUnitOnSpace(result.ActionTarget));
                 break;
         }
 
@@ -50,5 +45,10 @@ public class PlayerCharacter : UnitController
     public override void React()
     {
         return;
+    }
+
+    protected override bool AcceptHug(UnitController hugger)
+    {
+        return true;
     }
 }

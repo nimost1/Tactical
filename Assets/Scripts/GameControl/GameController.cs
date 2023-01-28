@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(PlayerInteractionController), typeof(PlayerInput), typeof(Reactions))]
@@ -13,6 +15,7 @@ public class GameController : MonoBehaviour
     
     public PlayerInput Input;
     public PlayerInteractionController PlayerInteraction;
+    public Reactions Reactions;
     public EventSystem EventSystem;
 
     //The height and width of the tilemap, i.e., index [EasternBorder, UpperBorder] does not exist.
@@ -47,6 +50,7 @@ public class GameController : MonoBehaviour
 
         Input = GetComponent<PlayerInput>();
         PlayerInteraction = GetComponent<PlayerInteractionController>();
+        Reactions = GetComponent<Reactions>();
     }
 
     public void FindGroundTilemap()
@@ -60,8 +64,6 @@ public class GameController : MonoBehaviour
         SaveController.LoadMostRecentSave();
         
         //TurnController.SortUnits(units);
-
-        //AnimationController.InitializeState();
         
         //units[0].TakeTurn();
     }
@@ -82,10 +84,7 @@ public class GameController : MonoBehaviour
         {
             unit.React();
         }
-    }
-
-    public Coroutine StartAnimateState()
-    {
-        return StartCoroutine(AnimationController.AnimateState());
+        
+        Reactions.ClearData();
     }
 }

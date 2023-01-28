@@ -35,6 +35,7 @@ public class LevelLoadController : MonoBehaviour
         //Loads the given level, unloads the current level and sets the new level as the active level.
 
         isLoadingNewScene = true;
+        
         //Ville det vært en bedre løsning å sette opp ScriptableObjects for å gi litt initialization-info om levelen?
         //Eller skal man sette opp basert på save-state?
         var loadOperation = SceneManager.LoadSceneAsync(levelName, _additive);
@@ -50,7 +51,7 @@ public class LevelLoadController : MonoBehaviour
 
         SceneManager.SetActiveScene(scene);
         GameController.CurrentGameController.FindGroundTilemap();
-        
+
         currentLevel = levelName;
         isLoadingNewScene = false;
     }

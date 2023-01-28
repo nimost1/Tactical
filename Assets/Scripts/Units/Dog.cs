@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,29 +17,31 @@ public class Dog : UnitController
         turnOrder = 2;
     }
     
-    protected override void TakeAITurn()
+    protected override IEnumerator TakeAITurn()
     {
-        if (isPassive) return;
+        if (isPassive) yield break;
         
         //Find units in range and sort out the dogs and the dogowner.
         List<UnitController> unitList = GameController.CurrentGameController.units.ToList();
         unitList.RemoveAll(unit => unit.unitName is "Dog" or "DogOwner");
         
         //Do nothing if no targets are found.
-        if (unitList.Count == 0) return;
+        if (unitList.Count == 0) yield break;
         
         //Select a target
         UnitController target = UnitAIUtils.SelectClosestUnit(this, unitList);
         
         //Move towards target
         Vector2Int targetTile = UnitAIUtils.FindMovementTargetTowardsUnit(this, target);
-        MoveTo(targetTile);
+        yield return MoveAlongPath(GridController.ShortestMovablePathBetweenTiles(position, targetTile));
 
         //Attack if possible
         if (GridController.DistanceBetweenTiles(position, target.position) == 1)
         {
-            Attack(target, 1);
+            yield return AnimateMeleeAttack(target, 1);
         }
+        
+        FinishTurn();
     }
 
     public override void React()
@@ -49,10 +52,11 @@ public class Dog : UnitController
         }
     }
 
-    protected override void AcceptHug(UnitController hugger)
+    protected override bool AcceptHug(UnitController hugger)
     {
-        if (isPassive) return;
+        if (isPassive) return false;
         Attack(hugger, 1);
         print("Player took 1 damage while hugging.");
+        return false;
     }
 }
