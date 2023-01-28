@@ -21,6 +21,8 @@ public class PlayerInput : MonoBehaviour
     public bool BackPressed { get; private set; }
     public bool CycleLeftPressed { get; private set; }
     public bool CycleRightPressed { get; private set; }
+    
+    public Vector2 MousePosition { get; private set; }
 
     
     #endregion
@@ -42,5 +44,7 @@ public class PlayerInput : MonoBehaviour
 
         CycleLeftPressed = _inputActions.Player.CycleLeft.triggered;
         CycleRightPressed = _inputActions.Player.CycleRight.triggered;
+
+        MousePosition = _inputActions.Player.MousePosition.ReadValue<Vector2>();
     }
 }

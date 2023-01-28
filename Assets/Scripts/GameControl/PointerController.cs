@@ -92,10 +92,12 @@ public class PointerController : MonoBehaviour
             {
                 if (movableTiles.Contains(_pointerPosition)) break;
                 
-                if (GridController.IsTileOccupied(_pointerPosition) && attackableTiles.Contains(_pointerPosition)) break;
+                if (GridController.IsTileOccupiedByUnit(_pointerPosition) && attackableTiles.Contains(_pointerPosition)) break;
             }
-
-            var moveVector = GameController.CurrentGameController.Input.MoveVector;
+            
+            //Den følgende koden bruker move-vektoren til å flytte pekeren.
+            //Deaktivert for testing med mus.
+            /*var moveVector = GameController.CurrentGameController.Input.MoveVector;
             
             if (moveVector.y > 0.7f && _pointerPosition.y != GameController.CurrentGameController.upperBorder - 1)
             {
@@ -109,7 +111,16 @@ public class PointerController : MonoBehaviour
             }else if (moveVector.x < -0.7f && _pointerPosition.x != 0)
             {
                 _pointerPosition.x -= 1;
-            }
+            }*/
+
+            var mousePosition = GameController.CurrentGameController.Input.MousePosition;
+            var mouseWorldPosition = GameController.CurrentGameController.mainCamera.ScreenToWorldPoint(mousePosition);
+            var mouseGridPosition = GridController.WorldCoordinatesToGridCoordinates(mouseWorldPosition);
+            mouseGridPosition =
+                new Vector2Int(Mathf.Clamp(mouseGridPosition.x, 0, GameController.CurrentGameController.easternBorder - 1),
+                    Mathf.Clamp(mouseGridPosition.y, 0, GameController.CurrentGameController.upperBorder - 1));
+            
+            _pointerPosition = mouseGridPosition;
 
             _pointerRenderer.transform.position = GridController.GridCoordinatesToWorldCoordinates(_pointerPosition);
             

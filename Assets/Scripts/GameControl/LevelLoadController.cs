@@ -49,6 +49,7 @@ public class LevelLoadController : MonoBehaviour
         var scene = SceneManager.GetSceneByName(levelName);
 
         SceneManager.SetActiveScene(scene);
+        GameController.CurrentGameController.FindGroundTilemap();
         
         currentLevel = levelName;
         isLoadingNewScene = false;

@@ -808,8 +808,11 @@ MonoBehaviour:
   turnNumber: 0
   saveSlotName: save
   overlayTilemap: {fileID: 890386249}
+  mainCamera: {fileID: 530002612}
   _pauseCanvas: {fileID: 98107429}
   unitBase: {fileID: 1869652724832378953, guid: e8b0db3b90e58e64bb7c2f9dca081344, type: 3}
+  ground: {fileID: 0}
+  immovableTiles: []
 --- !u!114 &894194942
 MonoBehaviour:
   m_ObjectHideFlags: 0

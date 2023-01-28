@@ -24,7 +24,7 @@ public class DogOwner : UnitController
 
         foreach (var pos in GridController.GetAdjacentTiles(position))
         {
-            if (GridController.IsTileOccupied(pos) &&
+            if (GridController.IsTileOccupiedByUnit(pos) &&
                 GridController.GetUnitOnSpace(pos).unitName == "Player")
             {
                 Attack(pos, 3);

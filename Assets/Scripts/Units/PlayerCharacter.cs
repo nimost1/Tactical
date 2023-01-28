@@ -25,22 +25,28 @@ public class PlayerCharacter : UnitController
         switch (result.MenuChoice)
         {
             case PlayerInteractionController.MenuOptions.Wait:
-                MoveTo(result.MovementTarget);
+                yield return AnimationController.MoveAlongPath(this,
+                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
                 break;
             case PlayerInteractionController.MenuOptions.Attack:
-                MoveTo(result.MovementTarget);
+                yield return AnimationController.MoveAlongPath(this,
+                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
+                
+                yield return AnimationController.AnimateMeleeAttack(this, GridController.GetUnitOnSpace(result.ActionTarget));
                 Attack(GridController.GetUnitOnSpace(result.ActionTarget), 1);
                 break;
             case PlayerInteractionController.MenuOptions.Hug:
-                MoveTo(result.MovementTarget);
+                yield return AnimationController.MoveAlongPath(this,
+                    GridController.ShortestMovablePathBetweenTiles(this.position, result.MovementTarget));
+
+                yield return AnimationController.AnimateHug(this);
                 Hug(this, GridController.GetUnitOnSpace(result.ActionTarget));
                 break;
         }
 
-        StartCoroutine(FinishTurn());
+        FinishTurn();
     }
 
-    
     public override void React()
     {
         return;

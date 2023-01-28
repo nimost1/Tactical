@@ -75,7 +75,7 @@ public class PlayerInteractionController : MonoBehaviour
             Menu.ResetMenu();
 
             //Generate action menu
-            if (GridController.IsTileOccupied(pointerPosition) && pointerPosition != startPosition)
+            if (GridController.IsTileOccupiedByUnit(pointerPosition) && pointerPosition != startPosition)
             {
                 //Has selected a unit.
                 Menu.AddButton("Attack", OnAttack);
@@ -142,7 +142,7 @@ public class PlayerInteractionController : MonoBehaviour
                 var targets = GridController.GetUnitsInAttackRange(pointerPosition, attackRanges);
                 targets.Remove(GridController.GetUnitOnSpace(startPosition));
                 
-                if (GridController.IsTileOccupied(pointerPosition) && pointerPosition != startPosition)
+                if (GridController.IsTileOccupiedByUnit(pointerPosition) && pointerPosition != startPosition)
                 {
                     //The player has selected a tile with another unit
                     result.MovementTarget = UnitAIUtils.FindMovementTargetTowardsUnit(
@@ -171,7 +171,7 @@ public class PlayerInteractionController : MonoBehaviour
                 var targets = GridController.GetUnitsInAttackRange(pointerPosition, attackRanges);
                 targets.Remove(GridController.GetUnitOnSpace(startPosition));
 
-                if (GridController.IsTileOccupied(pointerPosition) && pointerPosition != startPosition)
+                if (GridController.IsTileOccupiedByUnit(pointerPosition) && pointerPosition != startPosition)
                 {
                     //The player has selected a tile with a unit
                     result.MovementTarget = UnitAIUtils.FindMovementTargetTowardsUnit(

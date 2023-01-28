@@ -9,17 +9,8 @@ using UnityEngine.Tilemaps;
 public class GridController : MonoBehaviour
 {
     //The grid controller is supposed to contain methods that let units make decisions on how to act, based on the grid state.
-    
-    public TerrainObject DefaultTerrainObject;
-    public TerrainObject GrassTerrainObject;
 
-    private void Awake()
-    {
-        DefaultTerrainObject = new TerrainObject(true);
-        GrassTerrainObject = new TerrainObject(true);
-    }
-    
-    public static bool IsTileOccupied(Vector2Int pos)
+    public static bool IsTileOccupiedByUnit(Vector2Int pos)
     {
         foreach (var unit in GameController.CurrentGameController.units)
         {
@@ -29,34 +20,12 @@ public class GridController : MonoBehaviour
         return false;
     }
 
-    /*public static TerrainObject GetTerrainType(Vector2Int pos, Tilemap ground)
+    public static bool IsTileMovable(Vector2Int pos)
     {
-        //En løsning er å droppe dette og heller sette opp et ScriptableObject e.l. for hver tile og linke hver tile i
-        //tile paletten til det. Da kan man sikkert sjekke scriptet for data.
-        
-        //En annen løsning kan være å lage funksjoner som sjekker terrengegenskaper basert på posisjon.
-        //Kan lage en funksjon som genererer arrays med data på compile og lagrer det i et Scriptable Object.
-        
-        //Jeg fant en løsning på internett. Se videoen i lenken jeg la til som bokmerke
+        return !GameController.CurrentGameController.immovableTiles.Contains(
+            GameController.CurrentGameController.ground.GetSprite(new Vector3Int(pos.x, pos.y, 0)));
+    }
 
-        Sprite sprite = ground.GetSprite(new Vector3Int(pos.x, pos.y, 0));
-        print(sprite.name);
-
-        //TODO: Dette funker ikke, fordi det ser ut som "name" vil gi navnet på tilemappet.
-
-        return DefaultTerrainObject;
-        
-        switch (sprite.name)
-        {
-            case "Grass":
-                print("Grass");
-                return GrassTerrainObject;
-            default:
-                print("Default");
-                return DefaultTerrainObject;
-        }
-    }*/
-    
     public static UnitController GetUnitOnSpace(Vector2Int pos)
     {
         foreach (var unit in GameController.CurrentGameController.units)
@@ -155,7 +124,7 @@ public class GridController : MonoBehaviour
         }
         
         var length = ShortestMovableLengthBetweenTile(startPos, endPos);
-        return length != 0 && length <= range && !IsTileOccupied(endPos) /*&& GetTerrainType(endPos).IsMovable*/;
+        return length != 0 && length <= range && !IsTileOccupiedByUnit(endPos) && IsTileMovable(endPos);
     }
     
     public static List<UnitController> GetUnitsInAttackRange(Vector2Int startPos, params int[] attackRanges)
@@ -189,17 +158,7 @@ public class GridController : MonoBehaviour
         return attackable;
     }
 
-    public class TerrainObject
-    {
-        public bool IsMovable;
-
-        public TerrainObject(bool movable)
-        {
-            IsMovable = movable;
-        }
-    }
-
-    public static Vector2 GridCoordinatesToWorldCoordinates(Vector2Int pos)
+    public static Vector2 GridCoordinatesToWorldCoordinates(Vector2 pos)
     {
         return new Vector2(pos.x + 0.5f, pos.y + 0.5f);
     }
@@ -222,7 +181,7 @@ public class GridController : MonoBehaviour
     public static List<Vector2Int> GetAdjacentMovableTiles(Vector2Int pos)
     {
         var list = GetAdjacentTiles(pos).ToList();
-        list.RemoveAll(p => /*!GetTerrainType(p).IsMovable ||*/ IsTileOccupied(p));
+        list.RemoveAll(p => !IsTileMovable(p) || IsTileOccupiedByUnit(p));
         return list;
     }
     

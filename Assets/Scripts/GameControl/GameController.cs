@@ -25,12 +25,14 @@ public class GameController : MonoBehaviour
     public string saveSlotName;
     
     public Tilemap overlayTilemap;
+    public Camera mainCamera;
     
     [SerializeField] private Canvas _pauseCanvas;
-    
+
     public GameObject unitBase;
 
-    //public Tilemap ground;
+    public Tilemap ground;
+    public List<Sprite> immovableTiles;
     
     private void Awake()
     {
@@ -47,11 +49,11 @@ public class GameController : MonoBehaviour
         PlayerInteraction = GetComponent<PlayerInteractionController>();
     }
 
-    /*public void FindGroundTilemap()
+    public void FindGroundTilemap()
     {
         //Find the ground tilemap
-        ground = GameObject.Find("Ground").GetComponent<Tilemap>();
-    }*/
+        ground = FindObjectOfType<Tilemap>();
+    }
 
     private void Start()
     {

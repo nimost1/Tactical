@@ -56,17 +56,14 @@ public class UnitController : MonoBehaviour
         else
         {
             TakeAITurn();
-            StartCoroutine(FinishTurn());
+            FinishTurn();
         }
     }
 
-    protected IEnumerator FinishTurn()
+    protected void FinishTurn()
     {
         //Lets all other units react
         GameController.CurrentGameController.React();
-        
-        //Animate any changes
-        yield return AnimationController.AnimateState();
 
         //Gives control to the next unit in the turn order
         TurnController.ProceedToNextTurn(this);
@@ -78,7 +75,7 @@ public class UnitController : MonoBehaviour
         
         yield return null;
         
-        StartCoroutine(FinishTurn());
+        FinishTurn();
     }
 
     protected virtual void TakeAITurn()
@@ -131,7 +128,7 @@ public class UnitController : MonoBehaviour
 
     protected void Attack(Vector2Int pos, int damage)
     {
-        if (GridController.IsTileOccupied(pos))
+        if (GridController.IsTileOccupiedByUnit(pos))
         {
             Attack(GridController.GetUnitOnSpace(pos), damage);
         }
