@@ -177,6 +177,13 @@ public class UnitController : MonoBehaviour
 
     public virtual void UpdateAfterLoad()
     {
+        if (position.x < 0 || position.x >= GameController.CurrentGameController.easternBorder ||
+            position.y < 0 || position.y >= GameController.CurrentGameController.upperBorder)
+        {
+            print("The loaded position was outside the map. Removed unit of type " + GetType().Name + ", with name " + unitName);
+            TurnController.RemoveUnitFromUnitList(this);
+        }
+        
         transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
         _healthText.text = hitPoints.ToString();
     }
