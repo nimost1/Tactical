@@ -40,8 +40,6 @@ public class Dog : UnitController
         {
             yield return AnimateMeleeAttack(target, 1);
         }
-        
-        FinishTurn();
     }
 
     public override void React()

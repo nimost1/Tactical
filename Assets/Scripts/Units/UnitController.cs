@@ -45,19 +45,22 @@ public class UnitController : MonoBehaviour
         transform.position = GridController.GridCoordinatesToWorldCoordinates(position);
     }
 
-    public void TakeTurn()
+    public IEnumerator TakeTurn()
     {
         print($"It is {unitName}'s turn.");
         
         if (isControlledByPlayer)
         {
-            StartCoroutine(TakePlayerTurn());
+            yield return TakePlayerTurn();
         }
         else
         {
-            StartCoroutine(TakeAITurn());
-            FinishTurn();
+            yield return TakeAITurn();
         }
+
+        yield return new WaitForSeconds(0.2f);
+        
+        FinishTurn();
     }
 
     protected void FinishTurn()
@@ -226,7 +229,7 @@ public class UnitController : MonoBehaviour
             yield return null;
         }
 
-        Attack(target, 1);
+        Attack(target, damage);
 
         while (Time.time < startTime + attackTime)
         {

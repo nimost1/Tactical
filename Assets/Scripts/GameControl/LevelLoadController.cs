@@ -11,8 +11,7 @@ public class LevelLoadController : MonoBehaviour
     
     public string firstLevel;
     public string currentLevel = "";
-    
-    
+
     private LoadSceneParameters _additive = new LoadSceneParameters(LoadSceneMode.Additive);
 
     private void Awake()
@@ -30,30 +29,21 @@ public class LevelLoadController : MonoBehaviour
         //StartCoroutine(LoadLevel(_firstLevel));
     }
 
-    public IEnumerator LoadLevel(string levelName)
+    private void OnEnable()
     {
-        //Loads the given level, unloads the current level and sets the new level as the active level.
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void LoadLevel(string levelName)
+    {
+        //Loads the given level.
+        SceneManager.LoadSceneAsync(levelName, _additive);
         isLoadingNewScene = true;
-        
-        //Ville det vært en bedre løsning å sette opp ScriptableObjects for å gi litt initialization-info om levelen?
-        //Eller skal man sette opp basert på save-state?
-        var loadOperation = SceneManager.LoadSceneAsync(levelName, _additive);
-
-        while (!loadOperation.isDone)
-        {
-            yield return null;
-        }
-        
-        if (currentLevel != "") SceneManager.UnloadSceneAsync(currentLevel);
-        
-        var scene = SceneManager.GetSceneByName(levelName);
-
-        SceneManager.SetActiveScene(scene);
-        GameController.CurrentGameController.FindGroundTilemap();
-
-        currentLevel = levelName;
-        isLoadingNewScene = false;
     }
 
     public IEnumerator WaitForLevelToLoad()
@@ -62,5 +52,26 @@ public class LevelLoadController : MonoBehaviour
         {
             yield return null;
         }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+    {
+        if (scene.name == "Loader")
+        {
+            return;
+        }
+        //Unload the previous level and sets the new level as the active level.
+        if (currentLevel != "") SceneManager.UnloadSceneAsync(currentLevel);
+        
+        SceneManager.SetActiveScene(scene);
+        GameController.CurrentGameController.FindGroundTilemap();
+
+        var playerTransform = GameObject.Find("Player").transform;
+        GameController.CurrentGameController.virtualCamera.transform.position =
+            new Vector3(playerTransform.position.x, playerTransform.position.y, -10);
+        GameController.CurrentGameController.virtualCamera.Follow = playerTransform;
+        
+        currentLevel = scene.name;
+        isLoadingNewScene = false;
     }
 }

@@ -69,7 +69,7 @@ public class SaveController : MonoBehaviour
             if (splitLine.Length != 2 || splitLine[0] != "SCENE") yield break;
     
             //Load the scene with the given name.
-            LevelLoadController.CurrentLevelLoadController.StartCoroutine(LevelLoadController.CurrentLevelLoadController.LoadLevel(splitLine[1]));
+            LevelLoadController.CurrentLevelLoadController.LoadLevel(splitLine[1]);
 
             yield return LevelLoadController.CurrentLevelLoadController.WaitForLevelToLoad();
 
@@ -172,8 +172,7 @@ public class SaveController : MonoBehaviour
 
     public static IEnumerator LoadNewGame()
     { 
-        LevelLoadController.CurrentLevelLoadController.StartCoroutine(
-            LevelLoadController.CurrentLevelLoadController.LoadLevel(LevelLoadController.CurrentLevelLoadController.firstLevel));
+        LevelLoadController.CurrentLevelLoadController.LoadLevel(LevelLoadController.CurrentLevelLoadController.firstLevel);
 
         yield return LevelLoadController.CurrentLevelLoadController.WaitForLevelToLoad();
         

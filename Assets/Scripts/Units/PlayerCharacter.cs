@@ -38,8 +38,6 @@ public class PlayerCharacter : UnitController
                 yield return AnimateHug(GridController.GetUnitOnSpace(result.ActionTarget));
                 break;
         }
-
-        FinishTurn();
     }
 
     public override void React()

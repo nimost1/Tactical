@@ -27,7 +27,7 @@ public class TurnController : MonoBehaviour
             SaveController.Save();
         }
         
-        nextUnit.TakeTurn();
+        GameController.CurrentGameController.StartCoroutine(nextUnit.TakeTurn());
     }
 
     public static void RemoveUnitFromUnitList(UnitController unitToRemove/*, ref UnitController currentUnit*/)
@@ -54,11 +54,11 @@ public class TurnController : MonoBehaviour
             GameController.CurrentGameController.units.Find(unit => unit.GetType().Name == "PlayerCharacter");
         if (playerUnit != null)
         {
-            playerUnit.TakeTurn();
+            GameController.CurrentGameController.StartCoroutine(playerUnit.TakeTurn());
         }
         else
         {
-            GameController.CurrentGameController.units[0].TakeTurn();
+            GameController.CurrentGameController.StartCoroutine(GameController.CurrentGameController.units[0].TakeTurn());
         }
     }
 }

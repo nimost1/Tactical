@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -29,6 +30,7 @@ public class GameController : MonoBehaviour
     
     public Tilemap overlayTilemap;
     public Camera mainCamera;
+    public CinemachineVirtualCamera virtualCamera;
     
     [SerializeField] private Canvas _pauseCanvas;
 

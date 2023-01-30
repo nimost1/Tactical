@@ -31,8 +31,6 @@ public class DogOwner : UnitController
                 break;
             }
         }
-        
-        FinishTurn();
     }
 
     public override void React()

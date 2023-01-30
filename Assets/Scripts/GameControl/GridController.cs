@@ -165,7 +165,7 @@ public class GridController : MonoBehaviour
 
     public static Vector2Int WorldCoordinatesToGridCoordinates(Vector2 pos)
     {
-        var sum = Mathf.RoundToInt(pos.y * 0.5f);
+        var sum = Mathf.RoundToInt(pos.y * 2f);
         var difference = Mathf.RoundToInt(pos.x);
 
         var x = (sum + difference) / 2;
@@ -176,10 +176,10 @@ public class GridController : MonoBehaviour
     public static List<Vector2Int> GetAdjacentTiles(Vector2Int pos)
     {
         var list = new List<Vector2Int>();
-        if (pos.x != 0) list.Add(pos + Vector2Int.left);
-        if (pos.x != GameController.CurrentGameController.easternBorder - 1) list.Add(pos + Vector2Int.right);
-        if (pos.y != 0) list.Add(pos + Vector2Int.down);
-        if (pos.y != GameController.CurrentGameController.upperBorder - 1) list.Add(pos + Vector2Int.up);
+        if (pos.x > 0) list.Add(pos + Vector2Int.left);
+        if (pos.x < GameController.CurrentGameController.easternBorder - 1) list.Add(pos + Vector2Int.right);
+        if (pos.y > 0) list.Add(pos + Vector2Int.down);
+        if (pos.y < GameController.CurrentGameController.upperBorder - 1) list.Add(pos + Vector2Int.up);
         return list;
     }
 
