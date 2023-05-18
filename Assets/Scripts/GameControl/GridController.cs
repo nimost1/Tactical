@@ -160,17 +160,23 @@ public class GridController : MonoBehaviour
 
     public static Vector2 GridCoordinatesToWorldCoordinates(Vector2 pos)
     {
-        return pos.x * new Vector2(1f, 0.5f) + pos.y * new Vector2(-1f, 0.5f);
+        //Isometric, still needs some work:
+        //return pos.x * new Vector2(1f, 0.5f) + pos.y * new Vector2(-1f, 0.5f);
+        //Regular square grid:
+        return pos + new Vector2(0.5f, 0.5f);
     }
 
     public static Vector2Int WorldCoordinatesToGridCoordinates(Vector2 pos)
     {
-        var sum = Mathf.RoundToInt(pos.y * 2f);
+        //Isometric, still needs some work:
+        /*var sum = Mathf.RoundToInt(pos.y * 2f);
         var difference = Mathf.RoundToInt(pos.x);
 
         var x = (sum + difference) / 2;
         var y = (sum - difference) / 2;
-        return new Vector2Int(x, y);
+        return new Vector2Int(x, y);*/
+        //Regular square grid:
+        return Vector2Int.FloorToInt(pos);
     }
 
     public static List<Vector2Int> GetAdjacentTiles(Vector2Int pos)

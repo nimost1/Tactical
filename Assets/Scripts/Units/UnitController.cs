@@ -203,18 +203,21 @@ public class UnitController : MonoBehaviour
         while (index < path.Count)
         {
             var timePassed = Time.time - startTime;
-            
-            var xPosition = Mathf.Lerp(path[index - 1].x, path[index].x, timePassed / timePerTile - timePerTile * (index - 1));
-            var yPosition = Mathf.Lerp(path[index - 1].y, path[index].y, timePassed / timePerTile - timePerTile * (index - 1));
 
-            transform.position =
-                GridController.GridCoordinatesToWorldCoordinates(new Vector2(xPosition, yPosition));
-            
             if (timePassed >= timePerTile * index)
             {
                 index++;
+                if (index >= path.Count) break;
             }
+
+            var timeInThisStep = timePassed - timePerTile * (index - 1);
             
+            var xPosition = Mathf.Lerp(path[index - 1].x, path[index].x, timeInThisStep / timePerTile);
+            var yPosition = Mathf.Lerp(path[index - 1].y, path[index].y, timeInThisStep / timePerTile);
+
+            transform.position =
+                GridController.GridCoordinatesToWorldCoordinates(new Vector2(xPosition, yPosition));
+
             yield return null;
         }
 
